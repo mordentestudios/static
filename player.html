@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -12,47 +11,34 @@ body{
   font-family:sans-serif;
 }
 
-/* STACK CONTAINER */
-.project{
-  width:162px; /* your last container width */
+/* OUTER FRAME (gives transparent spacing) */
+.frame{
+  padding:1px;            /* the magic */
+  width:164px;
+  height:37px;
+  box-sizing:border-box;
 }
 
-/* EACH ROW */
+/* ORIGINAL CONTAINER */
 .player{
   position:relative;
   height:35px;
+  width:162px;
   background:#000;
+  border-radius:10px;
   display:flex;
   align-items:center;
   padding-left:10px;
   padding-right:8px;
 }
 
-/* rounded corners */
-.player:first-child{
-  border-top-left-radius:10px;
-  border-top-right-radius:10px;
-}
-.player:last-child{
-  border-bottom-left-radius:10px;
-  border-bottom-right-radius:10px;
-}
-
-/* separators */
-.player + .player{
-  border-top:1px solid #222;
-}
-
 /* remove blue focus */
-button{
-  outline:none;
-}
-button:focus{
+button,button:focus{
   outline:none;
   box-shadow:none;
 }
 
-/* PLAY BUTTON */
+/* PLAY */
 .play{
   width:0;
   height:0;
@@ -65,6 +51,7 @@ button:focus{
   margin-right:10px;
 }
 
+/* PAUSE */
 .pause{
   width:14px;
   height:16px;
@@ -78,9 +65,7 @@ button:focus{
   height:16px;
   background:#EDEDED;
 }
-.pause::after{
-  right:0;
-}
+.pause::after{ right:0; }
 
 /* COUNTER */
 .time{
@@ -132,6 +117,10 @@ button:focus{
   color:#aaa;
   font-size:14px;
   line-height:16px;
+  transition:color .15s ease;
+}
+.waves.muted{
+  color:#4C4C4C;
 }
 
 /* FADER */
@@ -155,98 +144,79 @@ input[type=range]::-webkit-slider-thumb{
   border-radius:50%;
 }
 </style>
-
 </head>
 
 <body>
 
-<div class="project">
-
-  <!-- ROW 1 -->
-
-  <div class="player" data-src="https://mordentestudios.github.io/static/media/a/v1/2006-p01.mp3">
+<div class="frame">
+  <div class="player">
     <button class="play"></button>
     <div class="time">0:00</div>
     <div class="speaker"><div class="waves">)))</div></div>
     <input type="range" min="0" max="1" step="0.01" value="0.8">
-    <audio></audio>
+    <audio preload="none"></audio>
   </div>
-
-  <!-- ROW 2 -->
-
-  <div class="player" data-src="https://mordentestudios.github.io/static/media/a/v1/2012-p01-m1.mp3">
-    <button class="play"></button>
-    <div class="time">0:00</div>
-    <div class="speaker"><div class="waves">)))</div></div>
-    <input type="range" min="0" max="1" step="0.01" value="0.8">
-    <audio></audio>
-  </div>
-
-  <!-- ROW 3 -->
-
-  <div class="player" data-src="https://mordentestudios.github.io/static/media/a/v1/2012-p01-m2.mp3">
-    <button class="play"></button>
-    <div class="time">0:00</div>
-    <div class="speaker"><div class="waves">)))</div></div>
-    <input type="range" min="0" max="1" step="0.01" value="0.8">
-    <audio></audio>
-  </div>
-
 </div>
 
 <script>
-const players = document.querySelectorAll(".player");
+/* GOOGLE SITES AUTO HEIGHT */
+window.parent.postMessage({type:"resize", height:37}, "*");
 
-players.forEach(p=>{
-  const btn = p.querySelector("button");
-  const audio = p.querySelector("audio");
-  const time = p.querySelector(".time");
-  const speaker = p.querySelector(".speaker");
-  const waves = p.querySelector(".waves");
-  const fader = p.querySelector("input");
+/* READ URL */
+const params = new URLSearchParams(window.location.search);
+const src = params.get("src");
 
-  /* smarter loading ready (but optional) */
-  if(p.dataset.src){
-    audio.src = p.dataset.src;
+const btn = document.querySelector("button");
+const audio = document.querySelector("audio");
+const time = document.querySelector(".time");
+const speaker = document.querySelector(".speaker");
+const waves = document.querySelector(".waves");
+const fader = document.querySelector("input");
+
+/* LAZY LOAD WHEN PLAYER ENTERS VIEW */
+let loaded = false;
+
+const observer = new IntersectionObserver(entries=>{
+  if(entries[0].isIntersecting && !loaded && src){
+    audio.src = src + "#t=0,8";   // browser hint
+    audio.load();
+    loaded = true;
+  }
+});
+observer.observe(document.querySelector(".frame"));
+
+audio.volume = fader.value;
+
+btn.addEventListener("click",()=>{
+  if(!audio.src && src){
+    audio.src = src;
+    audio.load();
   }
 
-  btn.addEventListener("click",()=>{
-    if(audio.paused){
+  if(audio.paused){
+    audio.play();
+    btn.className = "pause";
+  }else{
+    audio.pause();
+    btn.className = "play";
+  }
+});
 
-      /* stop others */
-      players.forEach(other=>{
-        const a = other.querySelector("audio");
-        const b = other.querySelector("button");
-        if(a !== audio){
-          a.pause();
-          b.className = "play";
-        }
-      });
+audio.addEventListener("timeupdate",()=>{
+  const m = Math.floor(audio.currentTime/60);
+  const s = Math.floor(audio.currentTime%60).toString().padStart(2,'0');
+  time.textContent = m+":"+s;
+});
 
-      audio.play();
-      btn.className = "pause";
-    }else{
-      audio.pause();
-      btn.className = "play";
-    }
-  });
+fader.addEventListener("input",()=>{
+  audio.volume = fader.value;
+  const v = fader.value*100;
+  fader.style.background = `linear-gradient(to right,#888 ${v}%,#4C4C4C ${v}%)`;
+});
 
-  audio.addEventListener("timeupdate",()=>{
-    const m = Math.floor(audio.currentTime/60);
-    const s = Math.floor(audio.currentTime%60).toString().padStart(2,'0');
-    time.textContent = m+":"+s;
-  });
-
-  fader.addEventListener("input",()=>{
-    audio.volume = fader.value;
-    const v = fader.value*100;
-    fader.style.background = `linear-gradient(to right,#888 ${v}%,#4C4C4C ${v}%)`;
-  });
-
-  speaker.addEventListener("click",()=>{
-    audio.muted = !audio.muted;
-    waves.style.visibility = audio.muted ? "hidden" : "visible";
-  });
+speaker.addEventListener("click",()=>{
+  audio.muted = !audio.muted;
+  waves.classList.toggle("muted", audio.muted);
 });
 </script>
 
