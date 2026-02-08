@@ -6,149 +6,184 @@
 <title>Player</title>
 
 <style>
-:root{
-  --bg:#000;
-  --gray:#bfbfbf;
-  --time:#f2f2f2;
-  --red:#ff0000;
-}
-
 body{
-  margin:0;
   background:transparent;
-  font-family: sans-serif;
+  font-family:sans-serif;
 }
 
+/* container */
 .player{
-  height:35px;
   width:150px;
-  background:var(--bg);
+  height:35px;
+  background:#000;
   border-radius:8px;
   display:flex;
   align-items:center;
-  padding:0 6px;
   gap:6px;
+  padding:0 8px;
   box-sizing:border-box;
 }
 
+/* buttons */
 button{
   background:none;
   border:none;
   padding:0;
-  margin:0;
   cursor:pointer;
   display:flex;
   align-items:center;
   justify-content:center;
 }
 
-.play svg{ fill: var(--gray); }
-.play.pause svg{ fill: var(--red); }
-
-.time{
-  color:var(--time);
-  font-size:12px;
-  min-width:34px;
+/* play icon */
+.play svg{
+  width:18px;
+  height:18px;
+  fill:#bfbfbf;
 }
 
-.speaker svg{ fill: var(--gray); }
-.speaker.muted svg{ fill: #666; }
+/* pause */
+.pause rect{
+  fill:#ff0000;
+}
 
-input[type=range]{
+/* time */
+.time{
+  color:#f2f2f2;
+  font-size:11px;
+  min-width:32px;
+  letter-spacing:1px;
+}
+
+/* speaker */
+.speaker svg{
+  width:18px;
+  height:18px;
+  fill:#bfbfbf;
+}
+
+/* waves disappear on mute */
+.muted .wave{
+  display:none;
+}
+
+/* slider */
+.volume{
+  -webkit-appearance:none;
+  appearance:none;
   width:45px;
+  height:2px;
+  background:#777;
+  outline:none;
+}
+
+.volume::-webkit-slider-thumb{
+  -webkit-appearance:none;
+  appearance:none;
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:#ccc;
+  cursor:pointer;
+}
+
+.volume::-moz-range-thumb{
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:#ccc;
+  cursor:pointer;
 }
 </style>
 </head>
 
 <body>
+
 <div class="player">
-  <button class="play" id="playBtn"></button>
-  <div class="time" id="time">0:00</div>
-  <button class="speaker" id="muteBtn"></button>
-  <input type="range" id="vol" min="0" max="1" step="0.01">
+  <button class="play"></button>
+  <div class="time">0:00</div>
+  <button class="speaker"></button>
+  <input class="volume" type="range" min="0" max="1" step="0.01" value="0.8">
+  <audio></audio>
 </div>
 
-<audio id="audio"></audio>
-
 <script>
-const params = new URLSearchParams(window.location.search);
-const src = params.get("src");
-const audio = document.getElementById("audio");
-audio.src = src;
+const players = document.querySelectorAll(".player");
 
-const playBtn = document.getElementById("playBtn");
-const muteBtn = document.getElementById("muteBtn");
-const time = document.getElementById("time");
-const vol = document.getElementById("vol");
+players.forEach(player=>{
+  const playBtn = player.querySelector(".play");
+  const speakerBtn = player.querySelector(".speaker");
+  const time = player.querySelector(".time");
+  const volumeSlider = player.querySelector(".volume");
+  const audio = player.querySelector("audio");
 
+  const params = new URLSearchParams(window.location.search);
+const file = params.get("src");
+if(file){ audio.src = file; }
 
-// --- SVG icons
-const playIcon = `<svg width="14" height="14" viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"></polygon></svg>`;
-const pauseIcon = `<svg width="14" height="14" viewBox="0 0 24 24"><rect x="5" y="3" width="5" height="18"></rect><rect x="14" y="3" width="5" height="18"></rect></svg>`;
-const speakerIcon = `<svg width="14" height="14" viewBox="0 0 24 24"><polygon points="3,9 7,9 12,4 12,20 7,15 3,15"></polygon></svg>`;
-
-playBtn.innerHTML = playIcon;
-muteBtn.innerHTML = speakerIcon;
-
-
-// --- volume memory
-const savedVol = localStorage.getItem("playerVolume");
-const startVol = savedVol ? parseFloat(savedVol) : 0.8;
-audio.volume = startVol;
-vol.value = startVol;
-
-
-// --- play / pause
-playBtn.onclick = () => {
-  if(audio.paused){
-    stopOthers();
-    audio.play();
-  } else {
-    audio.pause();
+  function formatTime(sec){
+    const m = Math.floor(sec/60);
+    const s = Math.floor(sec%60).toString().padStart(2,"0");
+    return `${m}:${s}`;
   }
-};
 
-audio.onplay = () => {
-  playBtn.classList.add("pause");
-  playBtn.innerHTML = pauseIcon;
-};
+  function stopOthers(){
+    document.querySelectorAll("audio").forEach(a=>{
+      if(a!==audio){ a.pause(); }
+    });
+    document.querySelectorAll(".play").forEach(btn=>{
+      btn.innerHTML = playIcon;
+    });
+  }
 
-audio.onpause = () => {
-  playBtn.classList.remove("pause");
+  const playIcon = `
+  <svg viewBox="0 0 24 24">
+    <polygon points="6,4 20,12 6,20"></polygon>
+  </svg>`;
+
+  const pauseIcon = `
+  <svg class="pause" viewBox="0 0 24 24">
+    <rect x="6" y="4" width="4" height="16"></rect>
+    <rect x="14" y="4" width="4" height="16"></rect>
+  </svg>`;
+
+  const speakerIcon = `
+  <svg viewBox="0 0 24 24">
+    <polygon points="3,9 7,9 12,4 12,20 7,15 3,15"></polygon>
+    <path class="wave" d="M15 9 Q18 12 15 15" stroke="#bfbfbf" stroke-width="2" fill="none"/>
+    <path class="wave" d="M17 7 Q21 12 17 17" stroke="#bfbfbf" stroke-width="2" fill="none"/>
+  </svg>`;
+
   playBtn.innerHTML = playIcon;
-};
+  speakerBtn.innerHTML = speakerIcon;
 
+  playBtn.onclick = ()=>{
+    if(audio.paused){
+      stopOthers();
+      audio.play();
+      playBtn.innerHTML = pauseIcon;
+    } else {
+      audio.pause();
+      playBtn.innerHTML = playIcon;
+    }
+  };
 
-// --- time
-audio.ontimeupdate = () => {
-  const m = Math.floor(audio.currentTime/60);
-  const s = Math.floor(audio.currentTime%60).toString().padStart(2,"0");
-  time.textContent = `${m}:${s}`;
-};
+  audio.ontimeupdate = ()=>{
+    time.textContent = formatTime(audio.currentTime);
+  };
 
+  volumeSlider.oninput = ()=>{
+    audio.volume = volumeSlider.value;
+  };
 
-// --- mute
-muteBtn.onclick = () => {
-  audio.muted = !audio.muted;
-  muteBtn.classList.toggle("muted", audio.muted);
-};
+  speakerBtn.onclick = ()=>{
+    audio.muted = !audio.muted;
+    speakerBtn.classList.toggle("muted");
+  };
 
-
-// --- volume change
-vol.oninput = () => {
-  audio.volume = vol.value;
-  localStorage.setItem("playerVolume", vol.value);
-};
-
-
-// --- auto stop
-function stopOthers(){
-  window.parent.postMessage({type:"stopOthers"}, "*");
-}
-
-window.addEventListener("message", e=>{
-  if(e.data.type === "stopOthers") audio.pause();
+  audio.volume = 0.8;
 });
 </script>
+
 </body>
 </html>
