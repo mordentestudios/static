@@ -7,11 +7,11 @@
 
 <style>
 body{
+  margin:0;
   background:transparent;
   font-family:sans-serif;
 }
 
-/* container */
 .player{
   width:150px;
   height:35px;
@@ -35,16 +35,22 @@ button{
   justify-content:center;
 }
 
-/* play icon */
+/* remove keyboard ugly square */
+button:focus{
+  outline:none;
+  box-shadow:none;
+}
+
+/* play */
 .play svg{
-  width:18px;
-  height:18px;
+  width:22px;
+  height:22px;
   fill:#bfbfbf;
 }
 
 /* pause */
 .pause rect{
-  fill:#ff0000;
+  fill:#f2f2f2;
 }
 
 /* time */
@@ -53,12 +59,13 @@ button{
   font-size:11px;
   min-width:32px;
   letter-spacing:1px;
+  margin-left:4px;
 }
 
 /* speaker */
 .speaker svg{
-  width:18px;
-  height:18px;
+  width:22px;
+  height:22px;
   fill:#bfbfbf;
 }
 
@@ -72,7 +79,7 @@ button{
   -webkit-appearance:none;
   appearance:none;
   width:45px;
-  height:2px;
+  height:3px;
   background:#777;
   outline:none;
 }
@@ -117,9 +124,10 @@ players.forEach(player=>{
   const volumeSlider = player.querySelector(".volume");
   const audio = player.querySelector("audio");
 
+  /* read src from URL */
   const params = new URLSearchParams(window.location.search);
-const file = params.get("src");
-if(file){ audio.src = file; }
+  const file = params.get("src");
+  if(file){ audio.src = file; }
 
   function formatTime(sec){
     const m = Math.floor(sec/60);
@@ -150,8 +158,8 @@ if(file){ audio.src = file; }
   const speakerIcon = `
   <svg viewBox="0 0 24 24">
     <polygon points="3,9 7,9 12,4 12,20 7,15 3,15"></polygon>
-    <path class="wave" d="M15 9 Q18 12 15 15" stroke="#bfbfbf" stroke-width="2" fill="none"/>
-    <path class="wave" d="M17 7 Q21 12 17 17" stroke="#bfbfbf" stroke-width="2" fill="none"/>
+    <path class="wave" d="M14 8 Q19 12 14 16" stroke="#bfbfbf" stroke-width="1.4" fill="none"/>
+    <path class="wave" d="M16 6 Q22 12 16 18" stroke="#bfbfbf" stroke-width="1.4" fill="none"/>
   </svg>`;
 
   playBtn.innerHTML = playIcon;
