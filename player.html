@@ -13,7 +13,7 @@ body{
 }
 
 .player{
-  width:150px;
+  width:162px; /* +12px */
   height:35px;
   background:#000;
   border-radius:8px;
@@ -35,7 +35,6 @@ button{
   justify-content:center;
 }
 
-/* remove keyboard ugly square */
 button:focus{
   outline:none;
   box-shadow:none;
@@ -56,13 +55,19 @@ button:focus{
 /* time */
 .time{
   color:#f2f2f2;
-  font-size:11px;
+  font-size:15px;           /* taller */
+  transform:scaleX(1.25);   /* wider */
+  transform-origin:left center;
   min-width:32px;
   letter-spacing:1px;
   margin-left:4px;
 }
 
 /* speaker */
+.speaker{
+  margin-left:2px;
+}
+
 .speaker svg{
   width:22px;
   height:22px;
@@ -79,9 +84,15 @@ button:focus{
   -webkit-appearance:none;
   appearance:none;
   width:45px;
-  height:3px;
-  background:#777;
+  height:5px; /* thicker */
+  border-radius:3px;
   outline:none;
+  margin-left:-11px;
+}
+
+/* dynamic track color */
+.volume{
+  background:linear-gradient(to right,#888 80%,#4c4c4c 80%);
 }
 
 .volume::-webkit-slider-thumb{
@@ -180,8 +191,15 @@ players.forEach(player=>{
     time.textContent = formatTime(audio.currentTime);
   };
 
+  function updateVolumeTrack(v){
+    const percent = v*100;
+    volumeSlider.style.background =
+      `linear-gradient(to right,#888 ${percent}%,#4c4c4c ${percent}%)`;
+  }
+
   volumeSlider.oninput = ()=>{
     audio.volume = volumeSlider.value;
+    updateVolumeTrack(volumeSlider.value);
   };
 
   speakerBtn.onclick = ()=>{
@@ -190,6 +208,7 @@ players.forEach(player=>{
   };
 
   audio.volume = 0.8;
+  updateVolumeTrack(0.8);
 });
 </script>
 
