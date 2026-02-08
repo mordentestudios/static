@@ -181,13 +181,6 @@ srcList.forEach(src=>{
   project.appendChild(row);
 });
 
-/* AUTO HEIGHT FOR GOOGLE SITES */
-function sendHeight(){
-  const h = srcList.length * 35;
-  window.parent.postMessage({type:"resize", height:h}, "*");
-}
-sendHeight();
-
 const players = document.querySelectorAll(".player");
 
 players.forEach(p=>{
@@ -203,6 +196,7 @@ players.forEach(p=>{
   btn.addEventListener("click",()=>{
     if(audio.paused){
 
+      /* stop others */
       players.forEach(other=>{
         const a = other.querySelector("audio");
         const b = other.querySelector("button");
