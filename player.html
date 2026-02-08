@@ -19,7 +19,6 @@ body{
   border-radius:8px;
   display:flex;
   align-items:center;
-  gap:6px;
   padding:0 8px;
   box-sizing:border-box;
 }
@@ -41,6 +40,10 @@ button:focus{
 }
 
 /* play */
+.play{
+  margin-right:6px; /* MASTER GAP */
+}
+
 .play svg{
   width:22px;
   height:22px;
@@ -56,18 +59,17 @@ button:focus{
 .time{
   color:#f2f2f2;
   font-size:15px;
-  transform:scaleX(0.85); /* squeezed */
+  transform:scaleX(0.85);
   transform-origin:left center;
   min-width:32px;
   letter-spacing:1px;
-  margin-left:4px;
-  position:relative;
-  top:-1px; /* move up */
+
+  margin-right:6px; /* same as play->counter */
 }
 
 /* speaker */
 .speaker{
-  margin-left:7px; /* previous +5 */
+  margin-right:3px; /* HALF of master gap */
   position:relative;
   top:-1px;
 }
@@ -91,12 +93,11 @@ button:focus{
   height:5px;
   border-radius:3px;
   outline:none;
-  margin-left:16px; /* to the right */
   position:relative;
   top:-1px;
 }
 
-/* default gradient */
+/* gradient */
 .volume{
   background:linear-gradient(to right,#888 80%,#4c4c4c 80%);
 }
