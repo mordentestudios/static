@@ -13,7 +13,7 @@ body{
 }
 
 .player{
-  width:162px; /* +12px */
+  width:162px;
   height:35px;
   background:#000;
   border-radius:8px;
@@ -55,17 +55,21 @@ button:focus{
 /* time */
 .time{
   color:#f2f2f2;
-  font-size:15px;           /* taller */
-  transform:scaleX(1.25);   /* wider */
+  font-size:15px;
+  transform:scaleX(0.85); /* squeezed */
   transform-origin:left center;
   min-width:32px;
   letter-spacing:1px;
   margin-left:4px;
+  position:relative;
+  top:-1px; /* move up */
 }
 
 /* speaker */
 .speaker{
-  margin-left:2px;
+  margin-left:7px; /* previous +5 */
+  position:relative;
+  top:-1px;
 }
 
 .speaker svg{
@@ -84,13 +88,15 @@ button:focus{
   -webkit-appearance:none;
   appearance:none;
   width:45px;
-  height:5px; /* thicker */
+  height:5px;
   border-radius:3px;
   outline:none;
-  margin-left:-11px;
+  margin-left:16px; /* to the right */
+  position:relative;
+  top:-1px;
 }
 
-/* dynamic track color */
+/* default gradient */
 .volume{
   background:linear-gradient(to right,#888 80%,#4c4c4c 80%);
 }
@@ -135,7 +141,6 @@ players.forEach(player=>{
   const volumeSlider = player.querySelector(".volume");
   const audio = player.querySelector("audio");
 
-  /* read src from URL */
   const params = new URLSearchParams(window.location.search);
   const file = params.get("src");
   if(file){ audio.src = file; }
