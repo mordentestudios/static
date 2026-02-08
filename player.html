@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -13,7 +14,7 @@ body{
 
 /* STACK CONTAINER */
 .project{
-  width:162px;
+  width:162px; /* your last container width */
 }
 
 /* EACH ROW */
@@ -37,18 +38,21 @@ body{
   border-bottom-right-radius:10px;
 }
 
-/* transparent separator */
+/* separators */
 .player + .player{
-  border-top:2px solid transparent;
+  border-top:1px solid #222;
 }
 
 /* remove blue focus */
-button,button:focus{
+button{
+  outline:none;
+}
+button:focus{
   outline:none;
   box-shadow:none;
 }
 
-/* PLAY */
+/* PLAY BUTTON */
 .play{
   width:0;
   height:0;
@@ -61,7 +65,6 @@ button,button:focus{
   margin-right:10px;
 }
 
-/* PAUSE */
 .pause{
   width:14px;
   height:16px;
@@ -75,7 +78,9 @@ button,button:focus{
   height:16px;
   background:#EDEDED;
 }
-.pause::after{ right:0; }
+.pause::after{
+  right:0;
+}
 
 /* COUNTER */
 .time{
@@ -127,10 +132,6 @@ button,button:focus{
   color:#aaa;
   font-size:14px;
   line-height:16px;
-  transition:color .15s ease;
-}
-.waves.muted{
-  color:#4C4C4C;
 }
 
 /* FADER */
@@ -154,33 +155,46 @@ input[type=range]::-webkit-slider-thumb{
   border-radius:50%;
 }
 </style>
+
 </head>
 
 <body>
 
-<div class="project" id="project"></div>
+<div class="project">
 
-<script>
-const project = document.getElementById("project");
+  <!-- ROW 1 -->
 
-/* READ URL */
-const params = new URLSearchParams(window.location.search);
-const srcList = (params.get("src") || "").split(",").filter(Boolean);
-
-/* CREATE ROWS */
-srcList.forEach(src=>{
-  const row = document.createElement("div");
-  row.className = "player";
-  row.innerHTML = `
+  <div class="player" data-src="https://mordentestudios.github.io/static/media/a/v1/2006-p01.mp3">
     <button class="play"></button>
     <div class="time">0:00</div>
     <div class="speaker"><div class="waves">)))</div></div>
     <input type="range" min="0" max="1" step="0.01" value="0.8">
-    <audio src="${src}"></audio>
-  `;
-  project.appendChild(row);
-});
+    <audio></audio>
+  </div>
 
+  <!-- ROW 2 -->
+
+  <div class="player" data-src="https://mordentestudios.github.io/static/media/a/v1/2012-p01-m1.mp3">
+    <button class="play"></button>
+    <div class="time">0:00</div>
+    <div class="speaker"><div class="waves">)))</div></div>
+    <input type="range" min="0" max="1" step="0.01" value="0.8">
+    <audio></audio>
+  </div>
+
+  <!-- ROW 3 -->
+
+  <div class="player" data-src="https://mordentestudios.github.io/static/media/a/v1/2012-p01-m2.mp3">
+    <button class="play"></button>
+    <div class="time">0:00</div>
+    <div class="speaker"><div class="waves">)))</div></div>
+    <input type="range" min="0" max="1" step="0.01" value="0.8">
+    <audio></audio>
+  </div>
+
+</div>
+
+<script>
 const players = document.querySelectorAll(".player");
 
 players.forEach(p=>{
@@ -191,7 +205,10 @@ players.forEach(p=>{
   const waves = p.querySelector(".waves");
   const fader = p.querySelector("input");
 
-  audio.volume = fader.value;
+  /* smarter loading ready (but optional) */
+  if(p.dataset.src){
+    audio.src = p.dataset.src;
+  }
 
   btn.addEventListener("click",()=>{
     if(audio.paused){
@@ -228,7 +245,7 @@ players.forEach(p=>{
 
   speaker.addEventListener("click",()=>{
     audio.muted = !audio.muted;
-    waves.classList.toggle("muted", audio.muted);
+    waves.style.visibility = audio.muted ? "hidden" : "visible";
   });
 });
 </script>
