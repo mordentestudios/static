@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Player</title>
 
 <style>
 body{
@@ -11,212 +12,216 @@ body{
   font-family:sans-serif;
 }
 
-/* OUTER FRAME (gives transparent spacing) */
-.frame{
-  padding:1px;            /* the magic */
-  width:164px;
-  height:37px;
+.player{
+  width:162px;
+  height:35px;
+  background:#000;
+  border-radius:8px;
+  display:flex;
+  align-items:center;
+  padding:0 8px;
   box-sizing:border-box;
 }
 
-/* ORIGINAL CONTAINER */
-.player{
-  position:relative;
-  height:35px;
-  width:162px;
-  background:#000;
-  border-radius:10px;
+/* buttons */
+button{
+  background:none;
+  border:none;
+  padding:0;
+  cursor:pointer;
   display:flex;
   align-items:center;
-  padding-left:10px;
-  padding-right:8px;
+  justify-content:center;
 }
 
-/* remove blue focus */
-button,button:focus{
+button:focus{
   outline:none;
   box-shadow:none;
 }
 
-/* PLAY */
+/* play */
 .play{
-  width:0;
-  height:0;
-  border-top:8px solid transparent;
-  border-bottom:8px solid transparent;
-  border-left:14px solid #8a8a8a;
-  background:none;
-  border-right:none;
-  cursor:pointer;
-  margin-right:10px;
-}
-
-/* PAUSE */
-.pause{
-  width:14px;
-  height:16px;
-  position:relative;
-}
-.pause::before,
-.pause::after{
-  content:"";
-  position:absolute;
-  width:4px;
-  height:16px;
-  background:#EDEDED;
-}
-.pause::after{ right:0; }
-
-/* COUNTER */
-.time{
-  color:#EDEDED;
-  font-size:16px;
-  transform-origin:left center;
-  transform:scaleY(1.35) scaleX(1.25);
-  margin-right:10px;
-  position:relative;
-  top:-1px;
-}
-
-/* SPEAKER */
-.speaker{
-  width:16px;
-  height:16px;
   margin-right:6px;
-  position:relative;
-  cursor:pointer;
-  top:1px;
 }
 
-.speaker:before{
-  content:"";
-  position:absolute;
-  width:6px;
+.play svg{
+  width:22px;
+  height:22px;
+  fill:#bfbfbf;
+}
+
+/* pause */
+.pause rect{
+  fill:#f2f2f2;
+}
+
+/* counter */
+.time{
+  color:#f2f2f2;
+  font-size:15px;
+  transform:scaleX(0.85);
+  transform-origin:left center;
+  min-width:32px;
+  letter-spacing:1px;
+
+  margin-right:6px;
+
+  position:relative;
+  top:-1px;      /* UP */
+  left:2px;      /* move right together with speaker */
+}
+
+/* speaker */
+.speaker{
+  margin-right:1px;  /* bring closer to fader */
+  position:relative;
+  top:0px;       /* DOWN compared to before */
+  left:2px;      /* same right shift as counter */
+}
+
+.speaker svg{
+  width:22px;
+  height:22px;
+  fill:#bfbfbf;
+}
+
+/* waves disappear on mute */
+.muted .wave{
+  display:none;
+}
+
+/* fader */
+.volume{
+  -webkit-appearance:none;
+  appearance:none;
+  width:45px;
+  height:5px;
+  border-radius:3px;
+  outline:none;
+
+  position:relative;
+  top:0px;       /* DOWN */
+  left:2px;      /* tiny push right */
+}
+
+/* gradient */
+.volume{
+  background:linear-gradient(to right,#888 80%,#4c4c4c 80%);
+}
+
+.volume::-webkit-slider-thumb{
+  -webkit-appearance:none;
+  appearance:none;
+  width:8px;
   height:8px;
-  background:#aaa;
-  left:0;
-  top:4px;
-}
-
-.speaker:after{
-  content:"";
-  position:absolute;
-  width:0;
-  height:0;
-  border-top:8px solid transparent;
-  border-bottom:8px solid transparent;
-  border-left:8px solid #aaa;
-  left:6px;
-}
-
-/* waves */
-.waves{
-  position:absolute;
-  left:16px;
-  top:0px;
-  color:#aaa;
-  font-size:14px;
-  line-height:16px;
-  transition:color .15s ease;
-}
-.waves.muted{
-  color:#4C4C4C;
-}
-
-/* FADER */
-input[type=range]{
-  -webkit-appearance:none;
-  width:55px;
-  height:6px;
-  margin-left:auto;
-  background:linear-gradient(to right,#888 80%,#4C4C4C 80%);
-  border-radius:4px;
-  cursor:pointer;
-  position:relative;
-  top:1px;
-}
-
-input[type=range]::-webkit-slider-thumb{
-  -webkit-appearance:none;
-  width:10px;
-  height:10px;
-  background:#ccc;
   border-radius:50%;
+  background:#ccc;
+  cursor:pointer;
+}
+
+.volume::-moz-range-thumb{
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:#ccc;
+  cursor:pointer;
 }
 </style>
 </head>
 
 <body>
 
-<div class="frame">
-  <div class="player">
-    <button class="play"></button>
-    <div class="time">0:00</div>
-    <div class="speaker"><div class="waves">)))</div></div>
-    <input type="range" min="0" max="1" step="0.01" value="0.8">
-    <audio preload="none"></audio>
-  </div>
+<div class="player">
+  <button class="play"></button>
+  <div class="time">0:00</div>
+  <button class="speaker"></button>
+  <input class="volume" type="range" min="0" max="1" step="0.01" value="0.8">
+  <audio></audio>
 </div>
 
 <script>
-/* GOOGLE SITES AUTO HEIGHT */
-window.parent.postMessage({type:"resize", height:37}, "*");
+const players = document.querySelectorAll(".player");
 
-/* READ URL */
-const params = new URLSearchParams(window.location.search);
-const src = params.get("src");
+players.forEach(player=>{
+  const playBtn = player.querySelector(".play");
+  const speakerBtn = player.querySelector(".speaker");
+  const time = player.querySelector(".time");
+  const volumeSlider = player.querySelector(".volume");
+  const audio = player.querySelector("audio");
 
-const btn = document.querySelector("button");
-const audio = document.querySelector("audio");
-const time = document.querySelector(".time");
-const speaker = document.querySelector(".speaker");
-const waves = document.querySelector(".waves");
-const fader = document.querySelector("input");
+  const params = new URLSearchParams(window.location.search);
+  const file = params.get("src");
+  if(file){ audio.src = file; }
 
-/* LAZY LOAD WHEN PLAYER ENTERS VIEW */
-let loaded = false;
-
-const observer = new IntersectionObserver(entries=>{
-  if(entries[0].isIntersecting && !loaded && src){
-    audio.src = src + "#t=0,8";   // browser hint
-    audio.load();
-    loaded = true;
-  }
-});
-observer.observe(document.querySelector(".frame"));
-
-audio.volume = fader.value;
-
-btn.addEventListener("click",()=>{
-  if(!audio.src && src){
-    audio.src = src;
-    audio.load();
+  function formatTime(sec){
+    const m = Math.floor(sec/60);
+    const s = Math.floor(sec%60).toString().padStart(2,"0");
+    return `${m}:${s}`;
   }
 
-  if(audio.paused){
-    audio.play();
-    btn.className = "pause";
-  }else{
-    audio.pause();
-    btn.className = "play";
+  function stopOthers(){
+    document.querySelectorAll("audio").forEach(a=>{
+      if(a!==audio){ a.pause(); }
+    });
+    document.querySelectorAll(".play").forEach(btn=>{
+      btn.innerHTML = playIcon;
+    });
   }
-});
 
-audio.addEventListener("timeupdate",()=>{
-  const m = Math.floor(audio.currentTime/60);
-  const s = Math.floor(audio.currentTime%60).toString().padStart(2,'0');
-  time.textContent = m+":"+s;
-});
+  const playIcon = `
+  <svg viewBox="0 0 24 24">
+    <polygon points="6,4 20,12 6,20"></polygon>
+  </svg>`;
 
-fader.addEventListener("input",()=>{
-  audio.volume = fader.value;
-  const v = fader.value*100;
-  fader.style.background = `linear-gradient(to right,#888 ${v}%,#4C4C4C ${v}%)`;
-});
+  const pauseIcon = `
+  <svg class="pause" viewBox="0 0 24 24">
+    <rect x="6" y="4" width="4" height="16"></rect>
+    <rect x="14" y="4" width="4" height="16"></rect>
+  </svg>`;
 
-speaker.addEventListener("click",()=>{
-  audio.muted = !audio.muted;
-  waves.classList.toggle("muted", audio.muted);
+  const speakerIcon = `
+  <svg viewBox="0 0 24 24">
+    <polygon points="3,9 7,9 12,4 12,20 7,15 3,15"></polygon>
+    <path class="wave" d="M14 8 Q19 12 14 16" stroke="#bfbfbf" stroke-width="1.4" fill="none"/>
+    <path class="wave" d="M16 6 Q22 12 16 18" stroke="#bfbfbf" stroke-width="1.4" fill="none"/>
+  </svg>`;
+
+  playBtn.innerHTML = playIcon;
+  speakerBtn.innerHTML = speakerIcon;
+
+  playBtn.onclick = ()=>{
+    if(audio.paused){
+      stopOthers();
+      audio.play();
+      playBtn.innerHTML = pauseIcon;
+    } else {
+      audio.pause();
+      playBtn.innerHTML = playIcon;
+    }
+  };
+
+  audio.ontimeupdate = ()=>{
+    time.textContent = formatTime(audio.currentTime);
+  };
+
+  function updateVolumeTrack(v){
+    const percent = v*100;
+    volumeSlider.style.background =
+      `linear-gradient(to right,#888 ${percent}%,#4c4c4c ${percent}%)`;
+  }
+
+  volumeSlider.oninput = ()=>{
+    audio.volume = volumeSlider.value;
+    updateVolumeTrack(volumeSlider.value);
+  };
+
+  speakerBtn.onclick = ()=>{
+    audio.muted = !audio.muted;
+    speakerBtn.classList.toggle("muted");
+  };
+
+  audio.volume = 0.8;
+  updateVolumeTrack(0.8);
 });
 </script>
 
