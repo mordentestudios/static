@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Player</title>
+
+<style>
+:root{
+  --bg:#000;
+  --gray:#bfbfbf;
+  --time:#f2f2f2;
+  --red:#ff0000;
+}
+
+body{
+  margin:0;
+  background:transparent;
+  font-family: sans-serif;
+}
+
+.player{
+  height:35px;
+  width:150px;
+  background:var(--bg);
+  border-radius:8px;
+  display:flex;
+  align-items:center;
+  padding:0 6px;
+  gap:6px;
+  box-sizing:border-box;
+}
+
+button{
+  background:none;
+  border:none;
+  padding:0;
+  margin:0;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.play svg{ fill: var(--gray); }
+.play.pause svg{ fill: var(--red); }
+
+.time{
+  color:var(--time);
+  font-size:12px;
+  min-width:34px;
+}
+
+.speaker svg{ fill: var(--gray); }
+.speaker.muted svg{ fill: #666; }
+
+input[type=range]{
+  width:45px;
+}
+</style>
+</head>
+
+<body>
+<div class="player">
+  <button class="play" id="playBtn"></button>
+  <div class="time" id="time">0:00</div>
+  <button class="speaker" id="muteBtn"></button>
+  <input type="range" id="vol" min="0" max="1" step="0.01">
+</div>
+
+<audio id="audio"></audio>
+
+<script>
+const params = new URLSearchParams(window.location.search);
+const src = params.get("src");
+const audio = document.getElementById("audio");
+audio.src = src;
+
+const playBtn = document.getElementById("playBtn");
+const muteBtn = document.getElementById("muteBtn");
+const time = document.getElementById("time");
+const vol = document.getElementById("vol");
+
+
+// --- SVG icons
+const playIcon = `<svg width="14" height="14" viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"></polygon></svg>`;
+const pauseIcon = `<svg width="14" height="14" viewBox="0 0 24 24"><rect x="5" y="3" width="5" height="18"></rect><rect x="14" y="3" width="5" height="18"></rect></svg>`;
+const speakerIcon = `<svg width="14" height="14" viewBox="0 0 24 24"><polygon points="3,9 7,9 12,4 12,20 7,15 3,15"></polygon></svg>`;
+
+playBtn.innerHTML = playIcon;
+muteBtn.innerHTML = speakerIcon;
+
+
+// --- volume memory
+const savedVol = localStorage.getItem("playerVolume");
+const startVol = savedVol ? parseFloat(savedVol) : 0.8;
+audio.volume = startVol;
+vol.value = startVol;
+
+
+// --- play / pause
+playBtn.onclick = () => {
+  if(audio.paused){
+    stopOthers();
+    audio.play();
+  } else {
+    audio.pause();
+  }
+};
+
+audio.onplay = () => {
+  playBtn.classList.add("pause");
+  playBtn.innerHTML = pauseIcon;
+};
+
+audio.onpause = () => {
+  playBtn.classList.remove("pause");
+  playBtn.innerHTML = playIcon;
+};
+
+
+// --- time
+audio.ontimeupdate = () => {
+  const m = Math.floor(audio.currentTime/60);
+  const s = Math.floor(audio.currentTime%60).toString().padStart(2,"0");
+  time.textContent = `${m}:${s}`;
+};
+
+
+// --- mute
+muteBtn.onclick = () => {
+  audio.muted = !audio.muted;
+  muteBtn.classList.toggle("muted", audio.muted);
+};
+
+
+// --- volume change
+vol.oninput = () => {
+  audio.volume = vol.value;
+  localStorage.setItem("playerVolume", vol.value);
+};
+
+
+// --- auto stop
+function stopOthers(){
+  window.parent.postMessage({type:"stopOthers"}, "*");
+}
+
+window.addEventListener("message", e=>{
+  if(e.data.type === "stopOthers") audio.pause();
+});
+</script>
+</body>
+</html>
