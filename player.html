@@ -41,7 +41,7 @@ button:focus{
 
 /* play */
 .play{
-  margin-right:6px; /* MASTER GAP */
+  margin-right:6px;
 }
 
 .play svg{
@@ -55,7 +55,7 @@ button:focus{
   fill:#f2f2f2;
 }
 
-/* time */
+/* counter */
 .time{
   color:#f2f2f2;
   font-size:15px;
@@ -64,14 +64,19 @@ button:focus{
   min-width:32px;
   letter-spacing:1px;
 
-  margin-right:6px; /* same as play->counter */
+  margin-right:6px;
+
+  position:relative;
+  top:-2px;      /* UP */
+  left:2px;      /* move right together with speaker */
 }
 
 /* speaker */
 .speaker{
-  margin-right:3px; /* HALF of master gap */
+  margin-right:1px;  /* bring closer to fader */
   position:relative;
-  top:-1px;
+  top:0px;       /* DOWN compared to before */
+  left:2px;      /* same right shift as counter */
 }
 
 .speaker svg{
@@ -85,7 +90,7 @@ button:focus{
   display:none;
 }
 
-/* slider */
+/* fader */
 .volume{
   -webkit-appearance:none;
   appearance:none;
@@ -93,8 +98,10 @@ button:focus{
   height:5px;
   border-radius:3px;
   outline:none;
+
   position:relative;
-  top:-1px;
+  top:0px;       /* DOWN */
+  left:2px;      /* tiny push right */
 }
 
 /* gradient */
