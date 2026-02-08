@@ -12,6 +12,15 @@ body{
   font-family:sans-serif;
 }
 
+/* OUTER TRANSPARENT FRAME */
+.frame{
+  width:164px;
+  height:37px;
+  padding:1px;
+  box-sizing:border-box;
+}
+
+/* ORIGINAL PLAYER */
 .player{
   width:162px;
   height:35px;
@@ -40,10 +49,7 @@ button:focus{
 }
 
 /* play */
-.play{
-  margin-right:6px;
-}
-
+.play{ margin-right:6px; }
 .play svg{
   width:22px;
   height:22px;
@@ -51,9 +57,7 @@ button:focus{
 }
 
 /* pause */
-.pause rect{
-  fill:#f2f2f2;
-}
+.pause rect{ fill:#f2f2f2; }
 
 /* counter */
 .time{
@@ -63,20 +67,18 @@ button:focus{
   transform-origin:left center;
   min-width:32px;
   letter-spacing:1px;
-
   margin-right:6px;
-
   position:relative;
-  top:-1px;      /* UP */
-  left:2px;      /* move right together with speaker */
+  top:-1px;
+  left:2px;
 }
 
 /* speaker */
 .speaker{
-  margin-right:1px;  /* bring closer to fader */
+  margin-right:1px;
   position:relative;
-  top:0px;       /* DOWN compared to before */
-  left:2px;      /* same right shift as counter */
+  top:0px;
+  left:2px;
 }
 
 .speaker svg{
@@ -85,9 +87,9 @@ button:focus{
   fill:#bfbfbf;
 }
 
-/* waves disappear on mute */
+/* WAVES COLOR WHEN MUTED */
 .muted .wave{
-  display:none;
+  stroke:#4C4C4C !important;
 }
 
 /* fader */
@@ -98,20 +100,14 @@ button:focus{
   height:5px;
   border-radius:3px;
   outline:none;
-
   position:relative;
-  top:0px;       /* DOWN */
-  left:2px;      /* tiny push right */
-}
-
-/* gradient */
-.volume{
+  top:0px;
+  left:2px;
   background:linear-gradient(to right,#888 80%,#4c4c4c 80%);
 }
 
 .volume::-webkit-slider-thumb{
   -webkit-appearance:none;
-  appearance:none;
   width:8px;
   height:8px;
   border-radius:50%;
@@ -131,98 +127,116 @@ button:focus{
 
 <body>
 
-<div class="player">
-  <button class="play"></button>
-  <div class="time">0:00</div>
-  <button class="speaker"></button>
-  <input class="volume" type="range" min="0" max="1" step="0.01" value="0.8">
-  <audio></audio>
+<div class="frame">
+  <div class="player">
+    <button class="play"></button>
+    <div class="time">0:00</div>
+    <button class="speaker"></button>
+    <input class="volume" type="range" min="0" max="1" step="0.01" value="0.8">
+    <audio preload="none"></audio>
+  </div>
 </div>
 
 <script>
-const players = document.querySelectorAll(".player");
+/* GOOGLE SITES HEIGHT */
+window.parent.postMessage({type:"resize", height:37}, "*");
 
-players.forEach(player=>{
-  const playBtn = player.querySelector(".play");
-  const speakerBtn = player.querySelector(".speaker");
-  const time = player.querySelector(".time");
-  const volumeSlider = player.querySelector(".volume");
-  const audio = player.querySelector("audio");
+const player = document.querySelector(".player");
+const playBtn = player.querySelector(".play");
+const speakerBtn = player.querySelector(".speaker");
+const time = player.querySelector(".time");
+const volumeSlider = player.querySelector(".volume");
+const audio = player.querySelector("audio");
 
-  const params = new URLSearchParams(window.location.search);
-  const file = params.get("src");
-  if(file){ audio.src = file; }
+const params = new URLSearchParams(window.location.search);
+const file = params.get("src");
 
-  function formatTime(sec){
-    const m = Math.floor(sec/60);
-    const s = Math.floor(sec%60).toString().padStart(2,"0");
-    return `${m}:${s}`;
+/* -------- LAZY LOAD -------- */
+let previewLoaded = false;
+
+const observer = new IntersectionObserver(entries=>{
+  if(entries[0].isIntersecting && !previewLoaded && file){
+    audio.src = file + "#t=0,8";
+    audio.load();
+    previewLoaded = true;
   }
-
-  function stopOthers(){
-    document.querySelectorAll("audio").forEach(a=>{
-      if(a!==audio){ a.pause(); }
-    });
-    document.querySelectorAll(".play").forEach(btn=>{
-      btn.innerHTML = playIcon;
-    });
-  }
-
-  const playIcon = `
-  <svg viewBox="0 0 24 24">
-    <polygon points="6,4 20,12 6,20"></polygon>
-  </svg>`;
-
-  const pauseIcon = `
-  <svg class="pause" viewBox="0 0 24 24">
-    <rect x="6" y="4" width="4" height="16"></rect>
-    <rect x="14" y="4" width="4" height="16"></rect>
-  </svg>`;
-
-  const speakerIcon = `
-  <svg viewBox="0 0 24 24">
-    <polygon points="3,9 7,9 12,4 12,20 7,15 3,15"></polygon>
-    <path class="wave" d="M14 8 Q19 12 14 16" stroke="#bfbfbf" stroke-width="1.4" fill="none"/>
-    <path class="wave" d="M16 6 Q22 12 16 18" stroke="#bfbfbf" stroke-width="1.4" fill="none"/>
-  </svg>`;
-
-  playBtn.innerHTML = playIcon;
-  speakerBtn.innerHTML = speakerIcon;
-
-  playBtn.onclick = ()=>{
-    if(audio.paused){
-      stopOthers();
-      audio.play();
-      playBtn.innerHTML = pauseIcon;
-    } else {
-      audio.pause();
-      playBtn.innerHTML = playIcon;
-    }
-  };
-
-  audio.ontimeupdate = ()=>{
-    time.textContent = formatTime(audio.currentTime);
-  };
-
-  function updateVolumeTrack(v){
-    const percent = v*100;
-    volumeSlider.style.background =
-      `linear-gradient(to right,#888 ${percent}%,#4c4c4c ${percent}%)`;
-  }
-
-  volumeSlider.oninput = ()=>{
-    audio.volume = volumeSlider.value;
-    updateVolumeTrack(volumeSlider.value);
-  };
-
-  speakerBtn.onclick = ()=>{
-    audio.muted = !audio.muted;
-    speakerBtn.classList.toggle("muted");
-  };
-
-  audio.volume = 0.8;
-  updateVolumeTrack(0.8);
 });
+observer.observe(document.querySelector(".frame"));
+
+function ensureFull(){
+  if(file && audio.src.indexOf("#t=") > -1){
+    audio.src = file;
+    audio.load();
+  }
+}
+
+/* icons */
+const playIcon = `
+<svg viewBox="0 0 24 24">
+  <polygon points="6,4 20,12 6,20"></polygon>
+</svg>`;
+
+const pauseIcon = `
+<svg class="pause" viewBox="0 0 24 24">
+  <rect x="6" y="4" width="4" height="16"></rect>
+  <rect x="14" y="4" width="4" height="16"></rect>
+</svg>`;
+
+const speakerIcon = `
+<svg viewBox="0 0 24 24">
+  <polygon points="3,9 7,9 12,4 12,20 7,15 3,15"></polygon>
+  <path class="wave" d="M14 8 Q19 12 14 16" stroke="#bfbfbf" stroke-width="1.4" fill="none"/>
+  <path class="wave" d="M16 6 Q22 12 16 18" stroke="#bfbfbf" stroke-width="1.4" fill="none"/>
+</svg>`;
+
+playBtn.innerHTML = playIcon;
+speakerBtn.innerHTML = speakerIcon;
+
+/* play */
+playBtn.onclick = ()=>{
+  if(!audio.src && file){
+    audio.src = file;
+    audio.load();
+  }
+  ensureFull();
+
+  if(audio.paused){
+    document.querySelectorAll("audio").forEach(a=>{ if(a!==audio) a.pause(); });
+    document.querySelectorAll(".play").forEach(b=>b.innerHTML=playIcon);
+    audio.play();
+    playBtn.innerHTML = pauseIcon;
+  }else{
+    audio.pause();
+    playBtn.innerHTML = playIcon;
+  }
+};
+
+/* time */
+audio.ontimeupdate = ()=>{
+  const m = Math.floor(audio.currentTime/60);
+  const s = Math.floor(audio.currentTime%60).toString().padStart(2,"0");
+  time.textContent = `${m}:${s}`;
+};
+
+/* volume */
+function updateVolumeTrack(v){
+  const p = v*100;
+  volumeSlider.style.background =
+  `linear-gradient(to right,#888 ${p}%,#4c4c4c ${p}%)`;
+}
+
+volumeSlider.oninput = ()=>{
+  audio.volume = volumeSlider.value;
+  updateVolumeTrack(volumeSlider.value);
+};
+
+speakerBtn.onclick = ()=>{
+  audio.muted = !audio.muted;
+  speakerBtn.classList.toggle("muted");
+};
+
+audio.volume = 0.8;
+updateVolumeTrack(0.8);
 </script>
 
 </body>
