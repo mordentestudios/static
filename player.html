@@ -10,6 +10,10 @@ body{
   margin:0;
   background:transparent;
   font-family:sans-serif;
+  display: flex;
+  justify-content: center; /* Centra horizontalmente */
+  align-items: top;     /* Centra verticalmente */
+  height: 100vh;           /* Usa todo el alto del cuadro azul */
 }
 
 /* OUTER TRANSPARENT FRAME */
@@ -124,8 +128,8 @@ button:focus{
   cursor:pointer;
 }
 
-@media (max-width: 480px) {
-  /* Forzamos al body del reproductor a crecer para que no corte el zoom */
+/* Esto solo se activa si el dispositivo NO tiene un mouse (Móviles/Tablets) */
+@media (pointer: coarse) {
   html, body {
     width: 200px !important; 
     height: 47px !important;
@@ -135,7 +139,6 @@ button:focus{
   .frame {
     transform: scale(1.2);
     transform-origin: left top;
-
     /* Margen de compensación para el 20% extra:
        Ancho: 164 * 0.2 = 32.8 (33px)
        Alto: 37 * 0.2 = 7.4 (8px) */
