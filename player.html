@@ -13,7 +13,7 @@ body{
   display: flex;
   justify-content: center; /* Centra horizontalmente */
   align-items: top;     /* Centra verticalmente */
-  height: 100vh;           /* Usa todo el alto del cuadro azul */
+/*  height: 100vh;           /* Usa todo el alto del cuadro azul */
 }
 
 /* OUTER TRANSPARENT FRAME */
@@ -142,7 +142,7 @@ button:focus{
 
   .frame {
     transform: scale(1.2);
-    transform-origin: left top;
+    transform-origin: center top;
     /* Margen de compensación para el 20% extra:
        Ancho: 164 * 0.2 = 32.8 (33px)
        Alto: 37 * 0.2 = 7.4 (8px) */
@@ -162,7 +162,7 @@ button:focus{
 
   .frame {
     transform: scale(0.8);
-/*    transform-origin: center top;
+    transform-origin: center top;
     /* Margen de compensación para el 20% extra:
        Ancho: 164 * 0.2 = 32.8 (33px)
        Alto: 37 * 0.2 = 7.4 (8px) */
