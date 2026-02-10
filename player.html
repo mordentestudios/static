@@ -6,40 +6,52 @@
 <title>Player</title>
 
 <style>
-html, body {
-  margin: 0 !important;
-  padding: 0 !important;
-  overflow: hidden;
-  background: transparent;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-}
+  /* 1. Eliminamos márgenes y forzamos el tamaño del lienzo */
+  html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: transparent;
+    overflow: hidden;
+    /* Reservamos el espacio para el escalado (164 * 1.2 = 197px) */
+    width: 200px; 
+    height: 48px;
+  }
 
-.frame {
-  /* Tamaño base = El tamaño máximo que alcanzará (164 * 1.2) */
-  width: 197px; 
-  height: 45px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  transform-origin: center center;
-  /* Por defecto (PC), lo reducimos para que se vea de 164px */
-  transform: scale(0.833); 
-  flex-shrink: 0;
-}
+  /* 2. El frame inicial con tus medidas originales */
+  .frame {
+    width: 164px;
+    height: 37px;
+    padding: 1px;
+    box-sizing: border-box;
+    transform-origin: top left; /* Cambiado a top left para pegarlo al borde azul */
+    display: block;
+  }
 
-.player {
-  width: 162px;
-  height: 35px;
-  background: #000;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  padding: 0 8px;
-  box-sizing: border-box;
-}
+  /* 3. El Player negro */
+  .player {
+    width: 162px;
+    height: 35px;
+    background: #000;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    padding: 0 8px;
+    box-sizing: border-box;
+  }
+
+  /* 4. Escalado para Móvil/Táctil */
+  @media (pointer: coarse) {
+    .frame {
+      transform: scale(1.2);
+    }
+  }
+
+  /* 5. Escalado para contenedores pequeños (Desktop) */
+  @media (max-width: 270px) and (pointer: fine) {
+    .frame {
+      transform: scale(0.8);
+    }
+  }
 
 /* buttons */
 button{
@@ -132,19 +144,6 @@ button:focus{
   cursor:pointer;
 }
 
-/* En móviles/táctil, le devolvemos su tamaño real (que es el escalado 1.2) */
-@media (pointer: coarse) {
-  .frame {
-    transform: scale(1); 
-  }
-}
-
-/* Para contenedores muy pequeños, lo reducimos más */
-@media (max-width: 200px) {
-  .frame {
-    transform: scale(0.66); /* 164 * 0.8 aprox */
-  }
-}
 </style>
 </head>
 
