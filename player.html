@@ -6,35 +6,39 @@
 <title>Player</title>
 
 <style>
-body{
-  margin:0;
-  background:transparent;
-  font-family:sans-serif;
+html, body {
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden;
+  background: transparent;
   display: flex;
-  justify-content: center; /* Centra horizontalmente */
-  align-items: center;     /* Centra verticalmente */
-  height: 100vh;           /* Usa todo el alto del cuadro azul */
+  justify-content: center;
+  align-items: center;
+  height: 100%;
 }
 
-/* OUTER TRANSPARENT FRAME */
-.frame{
-  width:164px;
-  height:37px;
-  padding:1px;
-  box-sizing:border-box;
-  display: block;
+.frame {
+  /* Tamaño base = El tamaño máximo que alcanzará (164 * 1.2) */
+  width: 197px; 
+  height: 45px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transform-origin: center center;
+  /* Por defecto (PC), lo reducimos para que se vea de 164px */
+  transform: scale(0.833); 
+  flex-shrink: 0;
 }
 
-/* ORIGINAL PLAYER */
-.player{
-  width:162px;
-  height:35px;
-  background:#000;
-  border-radius:8px;
-  display:flex;
-  align-items:center;
-  padding:0 8px;
-  box-sizing:border-box;
+.player {
+  width: 162px;
+  height: 35px;
+  background: #000;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+  box-sizing: border-box;
 }
 
 /* buttons */
@@ -128,55 +132,19 @@ button:focus{
   cursor:pointer;
 }
 
-/* Esto solo se activa si el dispositivo NO tiene un mouse (Móviles/Tablets) */
+/* En móviles/táctil, le devolvemos su tamaño real (que es el escalado 1.2) */
 @media (pointer: coarse) {
-  html, body {
-    width: 200px !important; 
-    height: 47px !important;
-    
-    width: 100%; 
-    height: 100%;
-
-    overflow: hidden;
-  }
-
   .frame {
-    transform: scale(1.2);
-    transform-origin: center center;
-    /* Margen de compensación para el 20% extra:
-       Ancho: 164 * 0.2 = 32.8 (33px)
-       Alto: 37 * 0.2 = 7.4 (8px) */
-    margin-left: 16px;
-    margin-right: 16px;
-    margin-top: 4px;
-    margin-bottom: 4px;
+    transform: scale(1); 
   }
 }
 
-  /* Escalado para contenedor pequeño */
- @media (max-width: 270px) {
-  /* Forzamos al body del reproductor a crecer para que no corte el zoom */
-  html, body {
-    width: 132px !important; 
-    height: 30px !important;
-
-    width: 100%; 
-    height: 100%;
-    
-    overflow: hidden;
-  }
-
+/* Para contenedores muy pequeños, lo reducimos más */
+@media (max-width: 200px) {
   .frame {
-    transform: scale(0.8);
-    transform-origin: center center;
-    /* Margen de compensación para el 20% extra:
-       Ancho: 164 * 0.2 = 32.8 (33px)
-       Alto: 37 * 0.2 = 7.4 (8px) */
-/*    margin-right: -32px;
-    margin-bottom: -7px; */
+    transform: scale(0.66); /* 164 * 0.8 aprox */
   }
 }
-
 </style>
 </head>
 
