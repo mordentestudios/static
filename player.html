@@ -151,6 +151,28 @@ button:focus{
   }
 }
 
+  /* Escalado para contenedor pequeño */
+/* @media (max-width: 270px) {
+  /* Forzamos al body del reproductor a crecer para que no corte el zoom */
+/*  html, body {
+    width: 200px !important; 
+    height: 47px !important;
+    overflow: hidden;
+  }
+*/
+  
+@media (max-width: 270px) {
+  .frame {
+    transform: scale(0.65);
+    transform-origin: left top;
+    /* Margen de compensación para el 20% extra:
+       Ancho: 164 * 0.2 = 32.8 (33px)
+       Alto: 37 * 0.2 = 7.4 (8px) */
+/*    margin-right: 33px;
+    margin-bottom: 8px; */
+  }
+}
+
 </style>
 </head>
 
