@@ -6,32 +6,30 @@
 <title>Player</title>
 
 <style>
-  /* 1. Eliminamos márgenes y forzamos el tamaño del lienzo */
+
   html, body {
     margin: 0 !important;
     padding: 0 !important;
     background: transparent;
     font-family:sans-serif;
-    overflow: hidden;
+    display: flex;
     justify-content: center;
     align-items: center;
-    /* Reservamos el espacio para el escalado (164 * 1.2 = 197px) */
-    width: 200px;
-    height: 48px;
-/*    height: 100vh; */
+    height: 100vh;
+    overflow: hidden;
   }
 
-  /* 2. El frame inicial con tus medidas originales */
+  /* El frame inicial con tus medidas originales */
   .frame {
     width: 164px;
     height: 37px;
     padding: 1px;
     box-sizing: border-box;
-    transform-origin: center center; /* Cambiado a top left para pegarlo al borde azul */
+    transform-origin: center center;
     display: block;
   }
 
-  /* 3. El Player negro */
+  /* El Player negro */
   .player {
     width: 162px;
     height: 35px;
@@ -43,21 +41,21 @@
     box-sizing: border-box;
   }
 
-  /* 4. Escalado para Móvil/Táctil */
+  /* Escalado para Móvil/Táctil */
   @media (pointer: coarse) {
     .frame {
       transform: scale(1.2);
-      transform-origin: center center;
+/*      transform-origin: center center; */
       width: 100%; 
       height: 100%;
     }
   }
 
-  /* 5. Escalado para contenedores pequeños (Desktop) */
+  /* Escalado para contenedores pequeños (Desktop) */
   @media (max-width: 270px) and (pointer: fine) {
     .frame {
       transform: scale(0.8);
-     transform-origin: center center;
+/*     transform-origin: center center; */
       width: 100%; 
       height: 100%;
     }
