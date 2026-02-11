@@ -10,13 +10,17 @@
   html, body {
     margin: 0 !important;
     padding: 0 !important;
-    background: transparent;
+    border: 0 !important;
+    outline: 0 !important;
+    background: transparent !important;
+    overflow: hidden !important; /* Evita que aparezcan barras de scroll al escalar */
+    width: 100% !important;
+    height: 100% !important;
     font-family:sans-serif;
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
-    overflow: hidden;
+/*    height: 100vh; */
   }
 
   /* El frame inicial con tus medidas originales */
