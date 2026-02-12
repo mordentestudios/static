@@ -12,9 +12,8 @@
     padding: 0 !important;
     border: 0 !important;
     outline: 0 !important;
-    overflow: hidden !important; /* Evita que aparezcan barras de scroll al escalar */
+    overflow: hidden !important;
     width: 100% !important;
-/*    height: 100% !important; */
     height: 100% !important;    
     background: transparent !important;
     font-family:sans-serif !important;
@@ -31,10 +30,6 @@
     box-sizing: border-box;
     display: block;
     transform-origin: center center;
-/*    margin-top: -4px !important;
-    margin-bottom: -4px !important;
-/*    margin-left: -8px !important;
-    margin-right: -4px !important; */
   }
 
   /* El Player negro */
@@ -52,48 +47,40 @@
   /* Escalado para Móvil/Táctil */
   @media (pointer: coarse) {
     html, body {
-/*      width: 200px !important; 
-      height: 47px !important; */
-      width: 100%; 
-      height: 100%;
+      width: 100% !important; 
+      height: 100% !important;
       overflow: hidden !important;
-      margin-left: 16px;
-      margin-right: 16px;
-      margin-top: 4px;
-      margin-bottom: 4px;
+      margin-left: 16px !important;
+      margin-right: 16px !important;
+      margin-top: 4px !important;
+      margin-bottom: 4px !important;
     }
     
     .frame {
       transform: scale(1.2);
       transform-origin: center center !important;
-      margin-left: 16px;
+/*      margin-left: 16px;
       margin-right: 16px;
       margin-top: 4px;
-      margin-bottom: 4px;
+      margin-bottom: 4px; */
     }
   }
 
   /* Escalado para contenedores pequeños (Desktop) */
   @media (max-width: 270px) and (pointer: fine) {
     html, body {
-/*      width: 132px !important;
-      height: 30px !important; */
       overflow: hidden !important;
       width: 100% !important; 
       height: 100% !important;
-      margin-left: -16px;
-      margin-right: -16px;
-      margin-top: -4px;
-      margin-bottom: -4px;
+      margin-left: -16px !important;
+      margin-right: -16px !important;
+      margin-top: -4px !important;
+      margin-bottom: -4px !important;
     }
     
     .frame {
       transform: scale(0.8);
       transform-origin: center center !important;
-   /*   margin-left: -16px;
-      margin-right: -16px;
-      margin-top: -4px;
-      margin-bottom: -4px; */
     }
   }
 
