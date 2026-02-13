@@ -44,8 +44,15 @@
 
   /* 4. Escalado para contenedores muy pequeños (Desktop redimensionado) */
   @media (max-width: 280px) and (pointer: fine) {
+    html, body {
+      overflow: hidden !important;
+      width: 100% !important; 
+      height: 100% !important;
+    }
+    
     .frame {
       transform: scale(0.8);
+      transform-origin: center center !important;
     }
   }
 
