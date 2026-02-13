@@ -27,7 +27,6 @@
     min-width: 164px !important;
     height: 37px !important;
     min-height: 37px !important;
-    
     padding: 1px;
     box-sizing: border-box;
     /* El zoom ahora nace desde el centro */
@@ -38,6 +37,12 @@
 
   /* 3. Escalado para Móvil/Táctil */
   @media (pointer: coarse) {
+    html, body {
+      overflow: hidden !important;
+      width: 100% !important; 
+      height: 100% !important;
+    }
+    
     .frame {
       transform: scale(1.2);
     }
