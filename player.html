@@ -187,9 +187,9 @@ const speakerBtn = player.querySelector(".speaker");
 const time = player.querySelector(".time");
 const volumeSlider = player.querySelector(".volume");
 const audio = player.querySelector("audio");
-
 const params = new URLSearchParams(window.location.search);
 const file = params.get("src");
+const PLAYER_ID = Math.random().toString(36).slice(2);
 
 /* -------- LAZY LOAD -------- */
 let previewLoaded = false;
@@ -211,7 +211,10 @@ function ensureFull(){
 }
 
   function notifyPlay(){
-  window.parent.postMessage({ type:"morden-stop-others" }, "*");
+  window.parent.postMessage({
+    type:"morden-stop-others",
+    id: PLAYER_ID
+  }, "*");
 }
 
 /* icons */
@@ -257,7 +260,7 @@ playBtn.onclick = ()=>{
 };
 
   window.addEventListener("message", (e)=>{
-  if(e.data?.type === "morden-stop-others"){
+  if(e.data?.type === "morden-stop-others" && e.data.id !== PLAYER_ID){
     if(!audio.paused){
       audio.pause();
       playBtn.innerHTML = playIcon;
