@@ -210,6 +210,10 @@ function ensureFull(){
   }
 }
 
+  function notifyPlay(){
+  window.parent.postMessage({ type:"morden-stop-others" }, "*");
+}
+
 /* icons */
 const playIcon = `
 <svg viewBox="0 0 24 24">
@@ -243,6 +247,7 @@ playBtn.onclick = ()=>{
   if(audio.paused){
     document.querySelectorAll("audio").forEach(a=>{ if(a!==audio) a.pause(); });
     document.querySelectorAll(".play").forEach(b=>b.innerHTML=playIcon);
+    notifyPlay();
     audio.play();
     playBtn.innerHTML = pauseIcon;
   }else{
@@ -250,6 +255,15 @@ playBtn.onclick = ()=>{
     playBtn.innerHTML = playIcon;
   }
 };
+
+  window.addEventListener("message", (e)=>{
+  if(e.data?.type === "morden-stop-others"){
+    if(!audio.paused){
+      audio.pause();
+      playBtn.innerHTML = playIcon;
+    }
+  }
+});
 
 /* time */
 audio.ontimeupdate = ()=>{
