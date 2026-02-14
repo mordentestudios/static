@@ -16,20 +16,18 @@
     background: transparent;
     font-family:sans-serif !important;
     display: flex;
-    justify-content: center; /* Centrado horizontal */
-    align-items: center;     /* Centrado vertical */
+    justify-content: center;
+    align-items: center;
   }
 
   /* 2. El frame con dimensiones mínimas prohibidas */
   .frame {
-    /* Blindamos el tamaño original */
     width: 164px !important;
     min-width: 164px !important;
     height: 37px !important;
     min-height: 37px !important;
     padding: 1px;
     box-sizing: border-box;
-    /* El zoom ahora nace desde el centro */
     transform-origin: center center; 
     flex-shrink: 0;
     display: block;
