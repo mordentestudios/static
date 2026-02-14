@@ -194,6 +194,7 @@ const file = params.get("src");
 /* -------- LAZY LOAD -------- */
 let previewLoaded = false;
 let fullPreloadDone = false;
+let userStartedThis = false;
 
 const observer = new IntersectionObserver(entries=>{
   if(entries[0].isIntersecting && !previewLoaded && file){
@@ -242,6 +243,7 @@ playBtn.onclick = ()=>{
   ensureFull();
 
   if(audio.paused){
+    userStartedThis = true;
     document.querySelectorAll("audio").forEach(a=>{ if(a!==audio) a.pause(); });
     document.querySelectorAll(".play").forEach(b=>b.innerHTML=playIcon);
     localStorage.setItem("morden-current-player", PLAYER_ID);
@@ -304,7 +306,7 @@ audio.addEventListener("progress", ()=>{
 
   const end = audio.buffered.end(audio.buffered.length - 1);
 
-  if(end >= audio.duration){
+  if(userStartedThis && audio.buffered.length){
     fullPreloadDone = true;
     localStorage.setItem("morden-preload-next", Date.now());
   }
